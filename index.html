@@ -879,6 +879,60 @@
       height: 72px;
       line-height: 1.5;
     }
+
+    /* ── Dark mode (auto, follows system) ──────────────────── */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:        #0F0E0C;
+        --surface:   #1A1814;
+        --border:    #2E2820;
+        --accent:    #C8762E;
+        --accent-lo: rgba(200, 118, 46, 0.10);
+        --accent-md: rgba(200, 118, 46, 0.18);
+        --text:      #F0EBE2;
+        --muted:     #6B6055;
+        --label:     #B8ADA0;
+      }
+
+      body::before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='0' cy='0' r='0.6' fill='%23302820'/%3E%3Ccircle cx='60' cy='0' r='0.6' fill='%23302820'/%3E%3Ccircle cx='0' cy='60' r='0.6' fill='%23302820'/%3E%3Ccircle cx='60' cy='60' r='0.6' fill='%23302820'/%3E%3Ccircle cx='30' cy='30' r='0.6' fill='%23302820'/%3E%3C/svg%3E");
+      }
+
+      .orb-1 {
+        background: radial-gradient(circle, rgba(200,118,46,0.13) 0%, transparent 65%);
+      }
+      .orb-2 {
+        background: radial-gradient(circle, rgba(200,118,46,0.10) 0%, transparent 65%);
+      }
+
+      .cursor-ring {
+        border-color: rgba(200,118,46,0.55);
+      }
+
+      nav.scrolled {
+        background: rgba(15,14,12,0.94);
+      }
+
+      #hero {
+        background: linear-gradient(160deg, #141210 0%, #0F0E0C 55%, #121008 100%);
+      }
+
+      .hero-ghost {
+        -webkit-text-stroke: 1px rgba(200,118,46,0.13);
+      }
+
+      .blog-reader {
+        background: var(--bg);
+      }
+
+      .blog-reader-close {
+        background: rgba(15,14,12,0.9);
+      }
+
+      .admin-overlay {
+        background: rgba(8,6,5,0.75);
+      }
+    }
   </style>
 </head>
 
@@ -1047,10 +1101,6 @@
           <p class="edu-role">Researcher &nbsp;·&nbsp; Centre for Robotics Research</p>
           <div class="edu-publications">
             <p class="edu-pub-label">Publications</p>
-            <a class="edu-pub-link" href="https://www.researchgate.net/scientific-contributions/Luis-Sullivan-2138825313" target="_blank" rel="noopener">
-              Three-Dimensional-Printable Thermoactive Helical Interface with Decentralized Morphological Stiffness Control for Continuum Manipulators
-              <span class="edu-pub-meta">Article &nbsp;·&nbsp; July 2018</span>
-            </a>
             <a class="edu-pub-link" href="https://www.researchgate.net/scientific-contributions/Luis-Sullivan-2138825313" target="_blank" rel="noopener">
               3D-Printable Thermoactive Helical Interface with Decentralized Morphological Stiffness Control for Continuum Manipulators
               <span class="edu-pub-meta">Conference Paper &nbsp;·&nbsp; IEEE Robotics and Automation Letters &nbsp;·&nbsp; May 2018</span>
