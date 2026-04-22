@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Luis Sullivan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #F7F4EE;
+      --surface:   #FFFFFF;
+      --border:    #DDD8CE;
+      --accent:    #A8612A;
+      --accent-lo: rgba(168, 97, 42, 0.07);
+      --accent-md: rgba(168, 97, 42, 0.14);
+      --text:      #1C1814;
+      --muted:     #9A9080;
+      --label:     #4E4840;
+      --serif:     'Cormorant Garamond', Georgia, serif;
+      --sans:      'Jost', system-ui, sans-serif;
+      --mono:      'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+    }
+    @media (hover: none) { body { cursor: auto; } }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ── Dot grid overlay ──────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='0' cy='0' r='0.6' fill='%23C8C0B0'/%3E%3Ccircle cx='60' cy='0' r='0.6' fill='%23C8C0B0'/%3E%3Ccircle cx='0' cy='60' r='0.6' fill='%23C8C0B0'/%3E%3Ccircle cx='60' cy='60' r='0.6' fill='%23C8C0B0'/%3E%3Ccircle cx='30' cy='30' r='0.6' fill='%23C8C0B0'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Ambient orbs ──────────────────────────────────────── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      will-change: transform, opacity;
+    }
+    .orb-1 {
+      width: 700px; height: 700px;
+      top: -280px; right: -180px;
+      background: radial-gradient(circle, rgba(168,97,42,0.09) 0%, transparent 65%);
+    }
+    .orb-2 {
+      width: 600px; height: 600px;
+      bottom: -200px; left: -160px;
+      background: radial-gradient(circle, rgba(168,97,42,0.07) 0%, transparent 65%);
+    }
+
+    /* ── Custom cursor ──────────────────────────────────────── */
+    .cursor-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-ring {
+      width: 32px; height: 32px;
+      border: 1.5px solid rgba(168,97,42,0.55);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.35s cubic-bezier(.23,1,.32,1),
+                  height 0.35s cubic-bezier(.23,1,.32,1),
+                  opacity 0.2s;
+    }
+    .cursor-ring.expand { width: 52px; height: 52px; }
+    .cursor-dot.hide { opacity: 0; }
+    @media (hover: none) { .cursor-dot, .cursor-ring { display: none; } }
+
+    /* ── Nav ────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 3rem;
+      border-bottom: 1px solid transparent;
+      transition: background 0.4s, border-color 0.4s;
+      background: rgba(247,244,238,0.94);
+      border-color: var(--border);
+      backdrop-filter: blur(14px);
+    }
+    .nav-name {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+    }
+    .nav-links { display: flex; gap: 2.25rem; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--label);
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a.active { color: var(--accent); }
+
+    /* ── Page header ────────────────────────────────────────── */
+    .page-header {
+      padding: 8rem 3rem 4rem;
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+    .page-back {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.25s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .page-back:hover { color: var(--accent); }
+
+    /* ── Layout ─────────────────────────────────────────────── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Blog section ───────────────────────────────────────── */
+    .blog-wrap {
+      padding: 4rem 0 8rem;
+      position: relative;
+      z-index: 1;
+    }
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5px;
+      background: var(--border);
+    }
+    .blog-card {
+      background: var(--surface);
+      padding: 2rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+    .blog-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .blog-card:hover { background: var(--accent-lo); }
+    .blog-card:hover::before { transform: scaleX(1); }
+    .blog-card-date {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+    .blog-card-title {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 300;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .blog-card-excerpt {
+      font-size: 0.88rem;
+      color: var(--label);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .blog-card-read {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .blog-empty {
+      padding: 6rem 0;
+      text-align: center;
+      display: none;
+    }
+    .blog-empty p {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Blog post reader ───────────────────────────────────── */
+    .blog-reader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 200;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.55s cubic-bezier(.23,1,.32,1);
+    }
+    .blog-reader.open { transform: translateY(0); }
+    .blog-reader-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 7rem 3rem 8rem;
+    }
+    .blog-reader-close {
+      position: fixed;
+      top: 1.5rem; right: 2rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(247,244,238,0.9);
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+      transition: color 0.25s, border-color 0.25s;
+      z-index: 201;
+      backdrop-filter: blur(8px);
+    }
+    .blog-reader-close:hover { color: var(--accent); border-color: var(--accent); }
+    .blog-reader-date {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 1.25rem;
+    }
+    .blog-reader-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 2.5rem;
+    }
+    .blog-reader-divider {
+      width: 48px; height: 1px;
+      background: var(--accent);
+      margin-bottom: 2.5rem;
+    }
+    .blog-reader-body {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    /* ── Admin panel ────────────────────────────────────────── */
+    .admin-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(28,24,20,0.55);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    .admin-overlay.open { display: flex; }
+    .admin-panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 680px;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 2.5rem;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-header h3 {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .admin-close {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.65rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .admin-close:hover { color: var(--accent); border-color: var(--accent); }
+    .admin-field { margin-bottom: 1.25rem; }
+    .admin-field label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .admin-field input,
+    .admin-field textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.65rem 0.75rem;
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.25s;
+      resize: vertical;
+    }
+    .admin-field input:focus,
+    .admin-field textarea:focus { border-color: var(--accent); }
+    .admin-field textarea { min-height: 240px; line-height: 1.75; }
+    .admin-actions { display: flex; gap: 0.75rem; margin-bottom: 2rem; }
+    .admin-btn {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.25rem;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--label);
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .admin-btn:hover { color: var(--text); border-color: var(--text); }
+    .admin-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .admin-btn.primary:hover { background: #8f4f20; border-color: #8f4f20; }
+    .admin-btn.danger:hover { color: #b03a2e; border-color: #b03a2e; }
+    .admin-divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+    .admin-posts-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+    .admin-post-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-post-item:last-child { border-bottom: none; }
+    .admin-post-title {
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--text);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .admin-post-date {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .admin-no-posts {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 1.25rem 0;
+      text-align: center;
+    }
+    .admin-export-box {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .admin-export-box label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.56rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .admin-export-box textarea {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--label);
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      height: 72px;
+      line-height: 1.5;
+    }
+
+    /* ── Footer ─────────────────────────────────────────────── */
+    footer {
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+    }
+    footer span {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 700px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-name { display: none; }
+      .nav-links { gap: 0.85rem; }
+      .nav-links a { font-size: 0.58rem; letter-spacing: 0.08em; }
+      .page-header { padding: 6rem 1.5rem 3rem; }
+      .container { padding: 0 1.5rem; }
+      .blog-grid { grid-template-columns: 1fr; }
+      .blog-reader-inner { padding: 5rem 1.5rem 6rem; }
+      .admin-panel { padding: 1.5rem; margin: 0 1rem; max-height: 95vh; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 2rem 1.5rem; }
+    }
+
+    /* ── Dark mode ──────────────────────────────────────────── */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:        #0F0E0C;
+        --surface:   #1A1814;
+        --border:    #2E2820;
+        --accent:    #C8762E;
+        --accent-lo: rgba(200, 118, 46, 0.10);
+        --accent-md: rgba(200, 118, 46, 0.18);
+        --text:      #F0EBE2;
+        --muted:     #6B6055;
+        --label:     #B8ADA0;
+      }
+
+      body::before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='0' cy='0' r='0.6' fill='%23302820'/%3E%3Ccircle cx='60' cy='0' r='0.6' fill='%23302820'/%3E%3Ccircle cx='0' cy='60' r='0.6' fill='%23302820'/%3E%3Ccircle cx='60' cy='60' r='0.6' fill='%23302820'/%3E%3Ccircle cx='30' cy='30' r='0.6' fill='%23302820'/%3E%3C/svg%3E");
+      }
+
+      .orb-1 { background: radial-gradient(circle, rgba(200,118,46,0.13) 0%, transparent 65%); }
+      .orb-2 { background: radial-gradient(circle, rgba(200,118,46,0.10) 0%, transparent 65%); }
+      .cursor-ring { border-color: rgba(200,118,46,0.55); }
+
+      nav {
+        background: rgba(15,14,12,0.94);
+      }
+
+      .blog-reader { background: var(--bg); }
+      .blog-reader-close { background: rgba(15,14,12,0.9); }
+      .admin-overlay { background: rgba(8,6,5,0.75); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <nav>
+    <a href="index.html" class="nav-name">L.S.</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#experience">Experience</a></li>
+      <li><a href="index.html#education">Education</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="blog.html" class="active">Blog</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1 class="page-title">Blog</h1>
+      <a href="index.html" class="page-back">&#8592; Back to CV</a>
+    </div>
+  </div>
+
+  <div class="blog-wrap">
+    <div class="container">
+      <div class="blog-grid" id="blog-grid"></div>
+      <div class="blog-empty" id="blog-empty"><p>No posts yet.</p></div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Luis Sullivan &copy; 2026</span>
+    <span>Madrid, Spain</span>
+  </footer>
+
+  <!-- Blog post reader -->
+  <div class="blog-reader" id="blog-reader">
+    <button class="blog-reader-close" id="reader-close">&#x2715; Close</button>
+    <div class="blog-reader-inner">
+      <span class="blog-reader-date" id="reader-date"></span>
+      <h2 class="blog-reader-title" id="reader-title"></h2>
+      <div class="blog-reader-divider"></div>
+      <div class="blog-reader-body" id="reader-body"></div>
+    </div>
+  </div>
+
+  <!-- Admin panel — open with Alt+Shift+A -->
+  <div class="admin-overlay" id="admin-overlay">
+    <div class="admin-panel">
+      <div class="admin-header">
+        <h3>Write a Post</h3>
+        <button class="admin-close" id="admin-close">Close</button>
+      </div>
+      <div class="admin-field">
+        <label>Title</label>
+        <input type="text" id="admin-title" placeholder="Post title…">
+      </div>
+      <div class="admin-field">
+        <label>Body</label>
+        <textarea id="admin-body" placeholder="Write your thoughts…"></textarea>
+      </div>
+      <div class="admin-actions">
+        <button class="admin-btn primary" id="admin-publish">Publish</button>
+        <button class="admin-btn" id="admin-clear">Clear</button>
+      </div>
+      <div class="admin-divider"></div>
+      <span class="admin-posts-label">Published Posts</span>
+      <div id="admin-posts-list"></div>
+      <div class="admin-export-box">
+        <label>Export JSON — paste this into posts.json and redeploy to share publicly</label>
+        <textarea id="admin-export-area" readonly></textarea>
+        <button class="admin-btn" id="admin-copy" style="margin-top:0.5rem">Copy JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script>
+    // ── Custom cursor ────────────────────────────────────────
+    const dot  = document.createElement('div'); dot.className  = 'cursor-dot';
+    const ring = document.createElement('div'); ring.className = 'cursor-ring';
+    document.body.append(dot, ring);
+
+    let mx = -200, my = -200, rx = -200, ry = -200;
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      gsap.set(dot, { x: mx, y: my });
+    });
+    gsap.ticker.add(() => {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      gsap.set(ring, { x: rx, y: ry });
+    });
+    document.querySelectorAll('a, .blog-card, .admin-btn').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.classList.add('expand');    dot.classList.add('hide'); });
+      el.addEventListener('mouseleave', () => { ring.classList.remove('expand'); dot.classList.remove('hide'); });
+    });
+
+    // ── Ambient orbs ─────────────────────────────────────────
+    gsap.to('.orb-1', { scale: 1.3, opacity: 0.8, duration: 7,  repeat: -1, yoyo: true, ease: 'sine.inOut' });
+    gsap.to('.orb-2', { scale: 1.4, opacity: 0.7, duration: 10, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 2.5 });
+
+    // ── Blog ─────────────────────────────────────────────────
+    const BLOG_KEY = 'ls_blog_posts';
+
+    function getPosts() {
+      try { return JSON.parse(localStorage.getItem(BLOG_KEY)) || []; }
+      catch { return []; }
+    }
+
+    function savePosts(posts) {
+      localStorage.setItem(BLOG_KEY, JSON.stringify(posts));
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderBlog() {
+      const posts = getPosts().sort((a, b) => new Date(b.date) - new Date(a.date));
+      const grid  = document.getElementById('blog-grid');
+      const empty = document.getElementById('blog-empty');
+      grid.innerHTML = '';
+      if (!posts.length) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      posts.forEach(post => {
+        const card = document.createElement('div');
+        card.className = 'blog-card';
+        card.innerHTML = `
+          <span class="blog-card-date">${formatDate(post.date)}</span>
+          <h3 class="blog-card-title">${escHtml(post.title)}</h3>
+          <p class="blog-card-excerpt">${escHtml(post.body)}</p>
+          <span class="blog-card-read">Read &rarr;</span>
+        `;
+        card.addEventListener('click', () => openReader(post));
+        grid.appendChild(card);
+        gsap.from(card, { opacity: 0, y: 20, duration: 0.6, ease: 'power2.out', delay: 0.05 });
+      });
+    }
+
+    // ── Reader ───────────────────────────────────────────────
+    const reader      = document.getElementById('blog-reader');
+    const readerTitle = document.getElementById('reader-title');
+    const readerDate  = document.getElementById('reader-date');
+    const readerBody  = document.getElementById('reader-body');
+
+    function openReader(post) {
+      readerDate.textContent  = formatDate(post.date);
+      readerTitle.textContent = post.title;
+      readerBody.textContent  = post.body;
+      reader.classList.add('open');
+      reader.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+    }
+
+    document.getElementById('reader-close').addEventListener('click', closeReader);
+    function closeReader() {
+      reader.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // ── Admin ────────────────────────────────────────────────
+    let editingId = null;
+    const adminOverlay   = document.getElementById('admin-overlay');
+    const adminTitleEl   = document.getElementById('admin-title');
+    const adminBodyEl    = document.getElementById('admin-body');
+    const adminPostsList = document.getElementById('admin-posts-list');
+    const adminExport    = document.getElementById('admin-export-area');
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (reader.classList.contains('open')) { closeReader(); return; }
+        if (adminOverlay.classList.contains('open')) { closeAdmin(); return; }
+      }
+      if (e.altKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        adminOverlay.classList.contains('open') ? closeAdmin() : openAdmin();
+      }
+    });
+
+    function openAdmin()  { adminOverlay.classList.add('open');    renderAdminList(); }
+    function closeAdmin() { adminOverlay.classList.remove('open'); clearForm(); }
+
+    document.getElementById('admin-close').addEventListener('click', closeAdmin);
+
+    document.getElementById('admin-publish').addEventListener('click', () => {
+      const title = adminTitleEl.value.trim();
+      const body  = adminBodyEl.value.trim();
+      if (!title || !body) return;
+      const posts = getPosts();
+      if (editingId) {
+        const idx = posts.findIndex(p => p.id === editingId);
+        if (idx > -1) { posts[idx].title = title; posts[idx].body = body; }
+      } else {
+        posts.push({ id: Date.now().toString(), title, body, date: new Date().toISOString() });
+      }
+      savePosts(posts);
+      clearForm();
+      renderAdminList();
+      renderBlog();
+    });
+
+    document.getElementById('admin-clear').addEventListener('click', clearForm);
+
+    function clearForm() {
+      adminTitleEl.value = '';
+      adminBodyEl.value  = '';
+      editingId = null;
+      document.getElementById('admin-publish').textContent = 'Publish';
+    }
+
+    function renderAdminList() {
+      const posts = getPosts().sort((a, b) => new Date(b.date) - new Date(a.date));
+      adminPostsList.innerHTML = '';
+      if (!posts.length) {
+        adminPostsList.innerHTML = '<p class="admin-no-posts">No posts yet.</p>';
+        adminExport.value = '[]';
+        return;
+      }
+      posts.forEach(post => {
+        const item = document.createElement('div');
+        item.className = 'admin-post-item';
+        item.innerHTML = `
+          <span class="admin-post-title">${escHtml(post.title)}</span>
+          <span class="admin-post-date">${formatDate(post.date)}</span>
+          <button class="admin-btn" data-edit="${post.id}">Edit</button>
+          <button class="admin-btn danger" data-del="${post.id}">Delete</button>
+        `;
+        item.querySelector('[data-edit]').addEventListener('click', () => {
+          adminTitleEl.value = post.title;
+          adminBodyEl.value  = post.body;
+          editingId = post.id;
+          document.getElementById('admin-publish').textContent = 'Update';
+          adminTitleEl.focus();
+          adminTitleEl.scrollIntoView({ behavior: 'smooth' });
+        });
+        item.querySelector('[data-del]').addEventListener('click', () => {
+          if (!confirm(`Delete "${post.title}"?`)) return;
+          savePosts(getPosts().filter(p => p.id !== post.id));
+          renderAdminList();
+          renderBlog();
+        });
+        adminPostsList.appendChild(item);
+      });
+      adminExport.value = JSON.stringify(posts, null, 2);
+    }
+
+    document.getElementById('admin-copy').addEventListener('click', function () {
+      adminExport.select();
+      document.execCommand('copy');
+      const orig = this.textContent;
+      this.textContent = 'Copied!';
+      setTimeout(() => this.textContent = orig, 1500);
+    });
+
+    if (window.location.hash === '#admin') openAdmin();
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#admin') openAdmin();
+    });
+
+    renderBlog();
+  </script>
+
+</body>
+</html>
