@@ -403,40 +403,6 @@
       font-size: 0.8rem;
     }
 
-    /* ── Skills ─────────────────────────────────────────────── */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-    }
-    .skill-group-title {
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .tag {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      letter-spacing: 0.06em;
-      color: var(--label);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 0.35rem 0.75rem;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-      cursor: default;
-    }
-    .tag:hover {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: var(--accent-lo);
-    }
-
     /* ── Education ──────────────────────────────────────────── */
     .edu-grid {
       display: grid;
@@ -591,8 +557,7 @@
       .tl-line-wrap, .tl-dot { display: none; }
       .tl-meta { text-align: left; padding-right: 0; }
       .tl-body { padding-left: 0; }
-      .skills-grid { grid-template-columns: 1fr; }
-      .edu-grid { grid-template-columns: 1fr; }
+.edu-grid { grid-template-columns: 1fr; }
       .contact-layout { grid-template-columns: 1fr; gap: 2.5rem; }
       footer { flex-direction: column; gap: 0.5rem; text-align: center; }
     }
@@ -818,54 +783,6 @@
     </div>
   </section>
 
-  <section id="skills">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-num">04</span>
-        <h2 class="section-title">Skills</h2>
-        <div class="section-line"></div>
-      </div>
-      <div class="skills-grid">
-        <div class="skill-group">
-          <p class="skill-group-title">Commercial</p>
-          <div class="skill-tags">
-            <span class="tag">Technical Sales</span>
-            <span class="tag">Account Management</span>
-            <span class="tag">Contract Negotiation</span>
-            <span class="tag">Market Expansion</span>
-            <span class="tag">Strategic Planning</span>
-          </div>
-        </div>
-        <div class="skill-group">
-          <p class="skill-group-title">Leadership</p>
-          <div class="skill-tags">
-            <span class="tag">Team Building</span>
-            <span class="tag">Public Speaking</span>
-            <span class="tag">Stakeholder Management</span>
-            <span class="tag">Cross-Functional Collaboration</span>
-          </div>
-        </div>
-        <div class="skill-group">
-          <p class="skill-group-title">Technical</p>
-          <div class="skill-tags">
-            <span class="tag">System Design</span>
-            <span class="tag">Engineering & Automation</span>
-            <span class="tag">Robotics</span>
-            <span class="tag">AI / Vision Systems</span>
-          </div>
-        </div>
-        <div class="skill-group">
-          <p class="skill-group-title">Languages</p>
-          <div class="skill-tags">
-            <span class="tag">English — Native</span>
-            <span class="tag">Spanish — Native</span>
-            <span class="tag">French — Basic</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section id="contact">
     <div class="container">
       <div class="section-header">
@@ -1049,17 +966,6 @@
           }
         });
       }
-    });
-
-    // ── Skills: cascade ──────────────────────────────────────
-    gsap.utils.toArray('.skill-group-title').forEach(el =>
-      gsap.from(el, { opacity: 0, x: -10, duration: 0.5, ease: 'power2.out', scrollTrigger: { trigger: el, start: 'top 85%' } })
-    );
-    gsap.from('.tag', {
-      opacity: 0, y: 12,
-      stagger: { amount: 0.65, from: 'start' },
-      duration: 0.55, ease: 'power2.out',
-      scrollTrigger: { trigger: '.skills-grid', start: 'top 80%' }
     });
 
     // ── Education: cards ─────────────────────────────────────
